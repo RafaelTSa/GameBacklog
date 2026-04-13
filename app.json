@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "GameBacklog",
-    "slug": "GameBacklog",
+    "slug": "gamebacklog",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,10 +20,17 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.rafael.gamebacklog"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "50e87433-2b0b-4cfd-a9e3-4b7da248d307"
+      }
+    },
+    "owner": "rafael-teixeira"
   }
 }
