@@ -1,65 +1,66 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
+import GameList from './src/components/GameList';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      {/* Configura a barra de estado do telemóvel */}
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#E60012" />
       
+      {/* Cabeçalho do App */}
       <View style={styles.header}>
-        <Text style={styles.title}>GAME BACKLOG</Text>
-        <Text style={styles.subtitle}>Nintendo Switch Edition</Text>
+        <Text style={styles.headerTitle}>GAME BACKLOG</Text>
+        <Text style={styles.headerSubtitle}>Nintendo Switch Edition</Text>
       </View>
 
-      <View style={styles.content}>
+      {/* Saudação */}
+      <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>Bem-vindo, Rafael!</Text>
-        <Text style={styles.infoText}>Pronto para organizar a sua biblioteca?</Text>
+        <Text style={styles.subtitleText}>Pronto para organizar a sua biblioteca?</Text>
       </View>
-    </View>
+
+      {/* Lista de Jogos */}
+      <GameList />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Fundo escuro (Dark Mode)
+    backgroundColor: '#121212',
   },
   header: {
-    backgroundColor: '#E60012', // Vermelho oficial Nintendo
-    paddingTop: 60,
-    paddingBottom: 20,
+    backgroundColor: '#E60012',
+    paddingTop: 24,
+    paddingBottom: 16,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
-  title: {
-    color: '#FFF',
+  headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    letterSpacing: 2,
+    color: '#FFFFFF',
+    letterSpacing: 1,
   },
-  subtitle: {
-    color: '#FFF',
+  headerSubtitle: {
     fontSize: 14,
-    opacity: 0.8,
+    color: '#FFFFFF',
+    opacity: 0.9,
   },
-  content: {
-    flex: 1,
+  welcomeContainer: {
+    padding: 24,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
   },
   welcomeText: {
-    color: '#FFF',
     fontSize: 20,
-    fontWeight: '500',
-    marginBottom: 10,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
-  infoText: {
-    color: '#888',
-    fontSize: 16,
-    textAlign: 'center',
+  subtitleText: {
+    fontSize: 14,
+    color: '#888888',
   },
 });
