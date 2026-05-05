@@ -5,7 +5,8 @@ export default function GameList() {
   const [games, setGames] = useState([
     { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
     { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
-    { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' }
+    { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' },
+    { id: '4', title: 'Sonic frontiers', status: 'Quero Jogar' }
   ]);
   
   const [newGameTitle, setNewGameTitle] = useState('');
@@ -34,7 +35,6 @@ export default function GameList() {
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Biblioteca de Jogos</Text>
       
-      {/* Formulário para adicionar jogos */}
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
