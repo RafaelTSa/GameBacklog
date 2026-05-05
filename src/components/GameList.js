@@ -1,13 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-
-const INITIAL_GAMES = [
-  { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
-  { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
-  { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' }
-];
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity } from 'react-native';
 
 export default function GameList() {
+  const [games, setGames] = useState([
+    { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
+    { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
+    { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' }
+  ]);
+  
+  const [newGameTitle, setNewGameTitle] = useState('');
+
+  const handleAddGame = () => {
+    if (newGameTitle.trim() === '') return;
+
+    const newGame = {
+      id: Date.now().toString(),
+      title: newGameTitle,
+      status: 'Quero Jogar'
+    };
+
+    setGames([...games, newGame]);
+    setNewGameTitle('');
+  };
+
   const renderGameItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.gameTitle}>{item.title}</Text>
@@ -18,8 +33,23 @@ export default function GameList() {
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Biblioteca de Jogos</Text>
+      
+      {/* Formulário para adicionar jogos */}
+      <View style={styles.formContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do jogo..."
+          placeholderTextColor="#888888"
+          value={newGameTitle}
+          onChangeText={setNewGameTitle}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={handleAddGame}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        data={INITIAL_GAMES}
+        data={games}
         keyExtractor={(item) => item.id}
         renderItem={renderGameItem}
       />
@@ -36,8 +66,33 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#E60012', // Vermelho temático Nintendo Switch
+    color: '#E60012',
     marginBottom: 16,
+  },
+  formContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+    color: '#FFFFFF',
+    padding: 12,
+    borderRadius: 8,
+    marginRight: 8,
+    fontSize: 14,
+  },
+  addButton: {
+    backgroundColor: '#E60012',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 48,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   card: {
     backgroundColor: '#1E1E1E',
