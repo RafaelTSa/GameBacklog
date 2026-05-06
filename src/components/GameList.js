@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Biblioteca de ícones que já vem no Expo
 
 export default function GameList() {
   const [games, setGames] = useState([
@@ -13,21 +14,42 @@ export default function GameList() {
 
   const handleAddGame = () => {
     if (newGameTitle.trim() === '') return;
-
     const newGame = {
       id: Date.now().toString(),
       title: newGameTitle,
       status: 'Quero Jogar'
     };
-
     setGames([...games, newGame]);
     setNewGameTitle('');
   };
 
+  const handleRemoveGame = (id) => {
+    Alert.alert(
+      "Remover Jogo",
+      "Tem certeza que deseja excluir este jogo da sua biblioteca?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Remover", 
+          onPress: () => setGames(games.filter(game => game.id !== id)),
+          style: "destructive" 
+        }
+      ]
+    );
+  };
+
   const renderGameItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.gameTitle}>{item.title}</Text>
-      <Text style={styles.gameStatus}>{item.status}</Text>
+      <View style={styles.gameInfo}>
+        <Text style={styles.gameTitle}>{item.title}</Text>
+        <Text style={styles.gameStatus}>{item.status}</Text>
+      </View>
+      <TouchableOpacity 
+        style={styles.deleteButton} 
+        onPress={() => handleRemoveGame(item.id)}
+      >
+        <Ionicons name="trash-outline" size={24} color="#E60012" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -44,7 +66,7 @@ export default function GameList() {
           onChangeText={setNewGameTitle}
         />
         <TouchableOpacity style={styles.addButton} onPress={handleAddGame}>
-          <Text style={styles.addButtonText}>+</Text>
+          <Ionicons name="add" size={30} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -71,7 +93,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   input: {
     flex: 1,
@@ -80,27 +102,30 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginRight: 8,
-    fontSize: 14,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#333',
   },
   addButton: {
     backgroundColor: '#E60012',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 48,
+    width: 50,
     borderRadius: 8,
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   card: {
     backgroundColor: '#1E1E1E',
     padding: 16,
     borderRadius: 8,
     marginBottom: 12,
-    borderLeftWidth: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderLeftWidth: 5,
     borderLeftColor: '#E60012',
+  },
+  gameInfo: {
+    flex: 1,
   },
   gameTitle: {
     fontSize: 16,
@@ -111,5 +136,8 @@ const styles = StyleSheet.create({
   gameStatus: {
     fontSize: 14,
     color: '#A0A0A0',
+  },
+  deleteButton: {
+    padding: 8,
   },
 });
