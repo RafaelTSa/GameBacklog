@@ -75,7 +75,6 @@ export default function GameList() {
     return game.status === activeFilter;
   });
 
-  // Define a cor do texto do score seguindo o padrão Metacritic
   const getScoreColor = (score) => {
     if (score >= 75) return '#66CC33'; // Verde
     if (score >= 50) return '#FFCC33'; // Amarelo
@@ -87,7 +86,6 @@ export default function GameList() {
       <View style={styles.gameInfo}>
         <Text style={styles.gameTitle}>{item.title}</Text>
         
-        {/* Linha de Status e Metacritic alinhados igual ao Mockup */}
         <View style={styles.metaRow}>
           <Text style={[
             styles.gameStatus, 
@@ -101,7 +99,6 @@ export default function GameList() {
           
           <Text style={styles.scoreLabel}>score</Text>
           
-          {/* Ícone customizado do Metacritic (Círculo com M) */}
           <MaterialCommunityIcons 
             name="alpha-m-circle-outline" 
             size={18} 
@@ -115,7 +112,6 @@ export default function GameList() {
         </View>
       </View>
       
-      {/* Botões de Ação na Direita */}
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.actionButton} onPress={() => handleToggleStatus(item.id)}>
           <Ionicons name="refresh-outline" size={22} color="#3498DB" />
@@ -130,7 +126,7 @@ export default function GameList() {
 
   return (
     <View style={styles.container}>
-      {/* Mensagem de boas-vindas igual ao layout */}
+      {/* Mensagem de boas-vindas corrigida (apenas uma vez) */}
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>Bem-vindo, Rafael!</Text>
         <Text style={styles.subtitleText}>Pronto para organizar a sua biblioteca?</Text>

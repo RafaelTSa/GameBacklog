@@ -1,27 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import GameList from './src/components/GameList';
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#E60012" />
       
-      {/* Cabeçalho do App */}
+      {/* Header Fixo com a identidade do Switch */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>GAME BACKLOG</Text>
         <Text style={styles.headerSubtitle}>Nintendo Switch Edition</Text>
       </View>
 
-      {/* Saudação */}
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Bem-vindo, Rafael!</Text>
-        <Text style={styles.subtitleText}>Pronto para organizar a sua biblioteca?</Text>
+      {/* Conteúdo Principal com a lista e os filtros */}
+      <View style={styles.content}>
+        <GameList />
       </View>
-
-      {/* Lista de Jogos */}
-      <GameList />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -32,35 +28,25 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#E60012',
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingTop: 50,
+    paddingBottom: 15,
     alignItems: 'center',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
     color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: 'bold',
     letterSpacing: 1,
   },
   headerSubtitle: {
-    fontSize: 14,
     color: '#FFFFFF',
+    fontSize: 12,
     opacity: 0.9,
+    marginTop: 2,
   },
-  welcomeContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  welcomeText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 8,
-  },
-  subtitleText: {
-    fontSize: 14,
-    color: '#888888',
+  content: {
+    flex: 1,
   },
 });
