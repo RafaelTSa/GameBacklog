@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function GameList() {
-  // Lista inicial já com as notas reais do Metacritic configuradas
   const [games, setGames] = useState([
     { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado', score: 97 },
     { id: '2', title: 'Super Mario Odyssey', status: 'Jogando', score: 97 },
     { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar', score: 94 },
-    { id: '4', title: 'Cyberpunk 2077', status: 'Quero Jogar', score: 86 }
+    { id: '4', title: 'Sonic Frontiers', status: 'Quero Jogar', score: 71 }
   ]);
   
   const [newGameTitle, setNewGameTitle] = useState('');
   const [newGameStatus, setNewGameStatus] = useState('Quero Jogar');
   const [activeFilter, setActiveFilter] = useState('Todos');
 
-  // Função auxiliar para simular a busca da nota no Metacritic
   const getMetacriticScore = (title) => {
     const lowerTitle = title.toLowerCase();
     if (lowerTitle.includes('zelda')) return 97;
@@ -26,7 +24,6 @@ export default function GameList() {
     if (lowerTitle.includes('control')) return 82;
     if (lowerTitle.includes('sonic')) return 71;
     
-    // Caso seja um jogo novo não mapeado, gera uma nota simulada entre 65 e 99
     return Math.floor(Math.random() * (99 - 65 + 1)) + 65;
   };
 
@@ -37,7 +34,7 @@ export default function GameList() {
       id: Date.now().toString(),
       title: newGameTitle,
       status: newGameStatus,
-      score: getMetacriticScore(newGameTitle) // Atribui a nota automaticamente
+      score: getMetacriticScore(newGameTitle)
     };
 
     setGames([...games, newGame]);
@@ -78,48 +75,67 @@ export default function GameList() {
     return game.status === activeFilter;
   });
 
-  // Função para definir a cor de fundo do selo baseado na nota do Metacritic
-  const getScoreBadgeColor = (score) => {
-    if (score >= 75) return '#66CC33'; // Verde (Metacritic Excelente)
-    if (score >= 50) return '#FFCC33'; // Amarelo (Metacritic Mediano)
-    return '#FF3333'; // Vermelho (Metacritic Baixo)
+  // Define a cor do texto do score seguindo o padrão Metacritic
+  const getScoreColor = (score) => {
+    if (score >= 75) return '#66CC33'; // Verde
+    if (score >= 50) return '#FFCC33'; // Amarelo
+    return '#FF3333'; // Vermelho
   };
 
   const renderGameItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.gameInfo}>
         <Text style={styles.gameTitle}>{item.title}</Text>
-        <Text style={[
-          styles.gameStatus, 
-          item.status === 'Finalizado' ? styles.statusDone : 
-          item.status === 'Jogando' ? styles.statusPlaying : styles.statusWant
-        ]}>
-          {item.status}
-        </Text>
+        
+        {/* Linha de Status e Metacritic alinhados igual ao Mockup */}
+        <View style={styles.metaRow}>
+          <Text style={[
+            styles.gameStatus, 
+            item.status === 'Finalizado' ? styles.statusDone : 
+            item.status === 'Jogando' ? styles.statusPlaying : styles.statusWant
+          ]}>
+            {item.status}
+          </Text>
+          
+          <Text style={styles.divider}>|</Text>
+          
+          <Text style={styles.scoreLabel}>score</Text>
+          
+          {/* Ícone customizado do Metacritic (Círculo com M) */}
+          <MaterialCommunityIcons 
+            name="alpha-m-circle-outline" 
+            size={18} 
+            color={getScoreColor(item.score)} 
+            style={styles.metaIcon}
+          />
+          
+          <Text style={[styles.scoreValue, { color: getScoreColor(item.score) }]}>
+            {item.score}
+          </Text>
+        </View>
       </View>
       
-      {/* Container de Ações e Nota */}
-      <View style={styles.rightContainer}>
-        {/* Selo do Metacritic */}
-        <View style={[styles.scoreBadge, { backgroundColor: getScoreBadgeColor(item.score) }]}>
-          <Text style={styles.scoreText}>{item.score}</Text>
-        </View>
+      {/* Botões de Ação na Direita */}
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleToggleStatus(item.id)}>
+          <Ionicons name="refresh-outline" size={22} color="#3498DB" />
+        </TouchableOpacity>
 
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.actionButton} onPress={() => handleToggleStatus(item.id)}>
-            <Ionicons name="refresh-outline" size={20} color="#3498DB" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} onPress={() => handleRemoveGame(item.id)}>
-            <Ionicons name="trash-outline" size={20} color="#E60012" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleRemoveGame(item.id)}>
+          <Ionicons name="trash-outline" size={22} color="#E60012" />
+        </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
+      {/* Mensagem de boas-vindas igual ao layout */}
+      <View style={styles.welcomeContainer}>
+        <Text style={styles.welcomeText}>Bem-vindo, Rafael!</Text>
+        <Text style={styles.subtitleText}>Pronto para organizar a sua biblioteca?</Text>
+      </View>
+
       <Text style={styles.sectionTitle}>Backlog de Jogos</Text>
       
       <View style={styles.formContainer}>
@@ -184,12 +200,26 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#121212',
   },
+  welcomeContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 25,
+  },
+  welcomeText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  subtitleText: {
+    color: '#888888',
+    fontSize: 13,
+    marginTop: 4,
+  },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#E60012',
-    marginBottom: 16,
-    letterSpacing: 0.5,
+    marginBottom: 12,
   },
   formContainer: {
     flexDirection: 'row',
@@ -272,7 +302,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#1E1E1E',
-    padding: 14,
+    padding: 16,
     borderRadius: 8,
     marginBottom: 12,
     flexDirection: 'row',
@@ -283,45 +313,48 @@ const styles = StyleSheet.create({
   },
   gameInfo: {
     flex: 1,
-    paddingRight: 8,
   },
   gameTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 6,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   gameStatus: {
-    fontSize: 11,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  divider: {
+    color: '#444',
+    marginHorizontal: 8,
+    fontSize: 12,
+  },
+  scoreLabel: {
+    color: '#888888',
+    fontSize: 12,
+    marginRight: 4,
+  },
+  metaIcon: {
+    marginRight: 2,
+  },
+  scoreValue: {
+    fontSize: 13,
     fontWeight: 'bold',
   },
   statusDone: { color: '#2ECC71' },  
   statusPlaying: { color: '#3498DB' }, 
   statusWant: { color: '#F1C40F' },    
-  rightContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  scoreBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  scoreText: {
-    color: '#000000',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   actionButton: {
     padding: 6,
-    marginLeft: 2,
+    marginLeft: 6,
   },
   emptyText: {
     color: '#666',
