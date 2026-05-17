@@ -3,16 +3,32 @@ import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } 
 import { Ionicons } from '@expo/vector-icons';
 
 export default function GameList() {
+  // Lista inicial já com as notas reais do Metacritic configuradas
   const [games, setGames] = useState([
-    { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
-    { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
-    { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' },
-    { id: '4', title: 'Sonic Frontiers', status: 'Quero Jogar' }
+    { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado', score: 97 },
+    { id: '2', title: 'Super Mario Odyssey', status: 'Jogando', score: 97 },
+    { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar', score: 94 },
+    { id: '4', title: 'Cyberpunk 2077', status: 'Quero Jogar', score: 86 }
   ]);
   
   const [newGameTitle, setNewGameTitle] = useState('');
   const [newGameStatus, setNewGameStatus] = useState('Quero Jogar');
   const [activeFilter, setActiveFilter] = useState('Todos');
+
+  // Função auxiliar para simular a busca da nota no Metacritic
+  const getMetacriticScore = (title) => {
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes('zelda')) return 97;
+    if (lowerTitle.includes('mario')) return 97;
+    if (lowerTitle.includes('metroid')) return 94;
+    if (lowerTitle.includes('cyberpunk')) return 86;
+    if (lowerTitle.includes('wukong')) return 81;
+    if (lowerTitle.includes('control')) return 82;
+    if (lowerTitle.includes('sonic')) return 71;
+    
+    // Caso seja um jogo novo não mapeado, gera uma nota simulada entre 65 e 99
+    return Math.floor(Math.random() * (99 - 65 + 1)) + 65;
+  };
 
   const handleAddGame = () => {
     if (newGameTitle.trim() === '') return;
@@ -20,7 +36,8 @@ export default function GameList() {
     const newGame = {
       id: Date.now().toString(),
       title: newGameTitle,
-      status: newGameStatus
+      status: newGameStatus,
+      score: getMetacriticScore(newGameTitle) // Atribui a nota automaticamente
     };
 
     setGames([...games, newGame]);
@@ -42,7 +59,6 @@ export default function GameList() {
     );
   };
 
-  // FUNÇÃO NOVA: Atualiza o status do jogo em ciclo contínuo
   const handleToggleStatus = (id) => {
     const updatedGames = games.map(game => {
       if (game.id === id) {
@@ -62,6 +78,13 @@ export default function GameList() {
     return game.status === activeFilter;
   });
 
+  // Função para definir a cor de fundo do selo baseado na nota do Metacritic
+  const getScoreBadgeColor = (score) => {
+    if (score >= 75) return '#66CC33'; // Verde (Metacritic Excelente)
+    if (score >= 50) return '#FFCC33'; // Amarelo (Metacritic Mediano)
+    return '#FF3333'; // Vermelho (Metacritic Baixo)
+  };
+
   const renderGameItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.gameInfo}>
@@ -75,21 +98,22 @@ export default function GameList() {
         </Text>
       </View>
       
-      {/* Botões de Ação */}
-      <View style={styles.actionsContainer}>
-        {/* Botão Novo: Alternar Status */}
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={() => handleToggleStatus(item.id)}
-          title="Alterar Status"
-        >
-          <Ionicons name="refresh-outline" size={22} color="#3498DB" />
-        </TouchableOpacity>
+      {/* Container de Ações e Nota */}
+      <View style={styles.rightContainer}>
+        {/* Selo do Metacritic */}
+        <View style={[styles.scoreBadge, { backgroundColor: getScoreBadgeColor(item.score) }]}>
+          <Text style={styles.scoreText}>{item.score}</Text>
+        </View>
 
-        {/* Botão: Remover Jogo */}
-        <TouchableOpacity style={styles.actionButton} onPress={() => handleRemoveGame(item.id)}>
-          <Ionicons name="trash-outline" size={22} color="#E60012" />
-        </TouchableOpacity>
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => handleToggleStatus(item.id)}>
+            <Ionicons name="refresh-outline" size={20} color="#3498DB" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButton} onPress={() => handleRemoveGame(item.id)}>
+            <Ionicons name="trash-outline" size={20} color="#E60012" />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -248,7 +272,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#1E1E1E',
-    padding: 16,
+    padding: 14,
     borderRadius: 8,
     marginBottom: 12,
     flexDirection: 'row',
@@ -259,27 +283,45 @@ const styles = StyleSheet.create({
   },
   gameInfo: {
     flex: 1,
+    paddingRight: 8,
   },
   gameTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 4,
   },
   gameStatus: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   statusDone: { color: '#2ECC71' },  
   statusPlaying: { color: '#3498DB' }, 
   statusWant: { color: '#F1C40F' },    
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  scoreBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  scoreText: {
+    color: '#000000',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   actionButton: {
-    padding: 8,
-    marginLeft: 4,
+    padding: 6,
+    marginLeft: 2,
   },
   emptyText: {
     color: '#666',
