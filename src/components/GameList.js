@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Biblioteca de ícones que já vem no Expo
+import { Ionicons } from '@expo/vector-icons';
 
 export default function GameList() {
+  // Lista inicial com status variados para testar os filtros
   const [games, setGames] = useState([
     { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
     { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
     { id: '3', title: 'Metroid Prime Remastered', status: 'Quero Jogar' },
-    { id: '4', title: 'Sonic frontiers', status: 'Quero Jogar' }
+    { id: '4', title: 'Sonic Frontiers', status: 'Quero Jogar' }
   ]);
   
   const [newGameTitle, setNewGameTitle] = useState('');
+  // Estado para controlar qual status o novo jogo terá ao ser criado
+  const [newGameStatus, setNewGameStatus] = useState('Quero Jogar');
+  // Estado para controlar qual aba de filtro está ativa na tela
+  const [activeFilter, setActiveFilter] = useState('Todos');
 
   const handleAddGame = () => {
     if (newGameTitle.trim() === '') return;
+    
     const newGame = {
       id: Date.now().toString(),
       title: newGameTitle,
-      status: 'Quero Jogar'
+      status: newGameStatus // Aplica o status selecionado
     };
+
     setGames([...games, newGame]);
     setNewGameTitle('');
   };
@@ -38,25 +45,35 @@ export default function GameList() {
     );
   };
 
+  // Filtra a lista de jogos que vai para a tela baseado na aba ativa
+  const filteredGames = games.filter(game => {
+    if (activeFilter === 'Todos') return true;
+    return game.status === activeFilter;
+  });
+
   const renderGameItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.gameInfo}>
         <Text style={styles.gameTitle}>{item.title}</Text>
-        <Text style={styles.gameStatus}>{item.status}</Text>
+        <Text style={[
+          styles.gameStatus, 
+          item.status === 'Finalizado' ? styles.statusDone : 
+          item.status === 'Jogando' ? styles.statusPlaying : styles.statusWant
+        ]}>
+          {item.status}
+        </Text>
       </View>
-      <TouchableOpacity 
-        style={styles.deleteButton} 
-        onPress={() => handleRemoveGame(item.id)}
-      >
-        <Ionicons name="trash-outline" size={24} color="#E60012" />
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveGame(item.id)}>
+        <Ionicons name="trash-outline" size={22} color="#E60012" />
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Biblioteca de Jogos</Text>
+      <Text style={styles.sectionTitle}>Backlog de Jogos</Text>
       
+      {/* Formulário de Adicionar Jogo */}
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
@@ -70,10 +87,47 @@ export default function GameList() {
         </TouchableOpacity>
       </View>
 
+      {/* Seletores de Status para o Novo Jogo */}
+      <View style={styles.statusSelectorContainer}>
+        <Text style={styles.selectorLabel}>Status do novo jogo:</Text>
+        <View style={styles.selectorButtonsRow}>
+          {['Quero Jogar', 'Jogando', 'Finalizado'].map((status) => (
+            <TouchableOpacity
+              key={status}
+              style={[styles.selectorChip, newGameStatus === status && styles.selectorChipActive]}
+              onPress={() => setNewGameStatus(status)}
+            >
+              <Text style={[styles.selectorChipText, newGameStatus === status && styles.selectorChipTextActive]}>
+                {status}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Abas de Filtros da Lista (Fidelidade visual de abas) */}
+      <View style={styles.filterTabsContainer}>
+        {['Todos', 'Quero Jogar', 'Jogando', 'Finalizado'].map((filter) => (
+          <TouchableOpacity
+            key={filter}
+            style={[styles.tabButton, activeFilter === filter && styles.tabButtonActive]}
+            onPress={() => setActiveFilter(filter)}
+          >
+            <Text style={[styles.tabText, activeFilter === filter && styles.tabTextActive]}>
+              {filter}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Listagem Dinâmica Filtrada */}
       <FlatList
-        data={games}
+        data={filteredGames}
         keyExtractor={(item) => item.id}
         renderItem={renderGameItem}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Nenhum jogo nesta categoria.</Text>
+        }
       />
     </View>
   );
@@ -86,14 +140,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212',
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#E60012',
     marginBottom: 16,
+    letterSpacing: 0.5,
   },
   formContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   input: {
     flex: 1,
@@ -112,6 +167,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 50,
     borderRadius: 8,
+  },
+  statusSelectorContainer: {
+    marginBottom: 20,
+  },
+  selectorLabel: {
+    color: '#A0A0A0',
+    fontSize: 12,
+    marginBottom: 6,
+  },
+  selectorButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  selectorChip: {
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+    paddingVertical: 6,
+    marginHorizontal: 2,
+    borderRadius: 6,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  selectorChipActive: {
+    backgroundColor: '#333',
+    borderColor: '#E60012',
+  },
+  selectorChipText: {
+    color: '#888',
+    fontSize: 12,
+  },
+  selectorChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  filterTabsContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    borderBottomColor: '#222',
+    marginBottom: 16,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  tabButtonActive: {
+    borderBottomWidth: 3,
+    borderBottomColor: '#E60012',
+  },
+  tabText: {
+    color: '#888888',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  tabTextActive: {
+    color: '#E60012',
   },
   card: {
     backgroundColor: '#1E1E1E',
@@ -134,10 +246,19 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   gameStatus: {
-    fontSize: 14,
-    color: '#A0A0A0',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
+  statusDone: { color: '#2ECC71' },  // Verde para concluído
+  statusPlaying: { color: '#3498DB' }, // Azul para jogando
+  statusWant: { color: '#F1C40F' },    // Amarelo para fila
   deleteButton: {
     padding: 8,
   },
+  emptyText: {
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 30,
+    fontSize: 15,
+  }
 });
