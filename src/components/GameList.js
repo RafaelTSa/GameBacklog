@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } 
 import { Ionicons } from '@expo/vector-icons';
 
 export default function GameList() {
-  // Lista inicial com status variados para testar os filtros
   const [games, setGames] = useState([
     { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado' },
     { id: '2', title: 'Super Mario Odyssey', status: 'Jogando' },
@@ -12,9 +11,7 @@ export default function GameList() {
   ]);
   
   const [newGameTitle, setNewGameTitle] = useState('');
-  // Estado para controlar qual status o novo jogo terá ao ser criado
   const [newGameStatus, setNewGameStatus] = useState('Quero Jogar');
-  // Estado para controlar qual aba de filtro está ativa na tela
   const [activeFilter, setActiveFilter] = useState('Todos');
 
   const handleAddGame = () => {
@@ -23,7 +20,7 @@ export default function GameList() {
     const newGame = {
       id: Date.now().toString(),
       title: newGameTitle,
-      status: newGameStatus // Aplica o status selecionado
+      status: newGameStatus
     };
 
     setGames([...games, newGame]);
@@ -45,7 +42,21 @@ export default function GameList() {
     );
   };
 
-  // Filtra a lista de jogos que vai para a tela baseado na aba ativa
+  // FUNÇÃO NOVA: Atualiza o status do jogo em ciclo contínuo
+  const handleToggleStatus = (id) => {
+    const updatedGames = games.map(game => {
+      if (game.id === id) {
+        let nextStatus = 'Quero Jogar';
+        if (game.status === 'Quero Jogar') nextStatus = 'Jogando';
+        else if (game.status === 'Jogando') nextStatus = 'Finalizado';
+        
+        return { ...game, status: nextStatus };
+      }
+      return game;
+    });
+    setGames(updatedGames);
+  };
+
   const filteredGames = games.filter(game => {
     if (activeFilter === 'Todos') return true;
     return game.status === activeFilter;
@@ -63,9 +74,23 @@ export default function GameList() {
           {item.status}
         </Text>
       </View>
-      <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveGame(item.id)}>
-        <Ionicons name="trash-outline" size={22} color="#E60012" />
-      </TouchableOpacity>
+      
+      {/* Botões de Ação */}
+      <View style={styles.actionsContainer}>
+        {/* Botão Novo: Alternar Status */}
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={() => handleToggleStatus(item.id)}
+          title="Alterar Status"
+        >
+          <Ionicons name="refresh-outline" size={22} color="#3498DB" />
+        </TouchableOpacity>
+
+        {/* Botão: Remover Jogo */}
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleRemoveGame(item.id)}>
+          <Ionicons name="trash-outline" size={22} color="#E60012" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -73,7 +98,6 @@ export default function GameList() {
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Backlog de Jogos</Text>
       
-      {/* Formulário de Adicionar Jogo */}
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
@@ -87,7 +111,6 @@ export default function GameList() {
         </TouchableOpacity>
       </View>
 
-      {/* Seletores de Status para o Novo Jogo */}
       <View style={styles.statusSelectorContainer}>
         <Text style={styles.selectorLabel}>Status do novo jogo:</Text>
         <View style={styles.selectorButtonsRow}>
@@ -105,7 +128,6 @@ export default function GameList() {
         </View>
       </View>
 
-      {/* Abas de Filtros da Lista (Fidelidade visual de abas) */}
       <View style={styles.filterTabsContainer}>
         {['Todos', 'Quero Jogar', 'Jogando', 'Finalizado'].map((filter) => (
           <TouchableOpacity
@@ -120,7 +142,6 @@ export default function GameList() {
         ))}
       </View>
 
-      {/* Listagem Dinâmica Filtrada */}
       <FlatList
         data={filteredGames}
         keyExtractor={(item) => item.id}
@@ -249,11 +270,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  statusDone: { color: '#2ECC71' },  // Verde para concluído
-  statusPlaying: { color: '#3498DB' }, // Azul para jogando
-  statusWant: { color: '#F1C40F' },    // Amarelo para fila
-  deleteButton: {
+  statusDone: { color: '#2ECC71' },  
+  statusPlaying: { color: '#3498DB' }, 
+  statusWant: { color: '#F1C40F' },    
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
     padding: 8,
+    marginLeft: 4,
   },
   emptyText: {
     color: '#666',
