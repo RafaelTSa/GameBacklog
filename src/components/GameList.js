@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Alert } 
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function GameList() {
+  // Estado local gerenciando a lista de forma estável na memória
   const [games, setGames] = useState([
     { id: '1', title: 'The Legend of Zelda: Breath of the Wild', status: 'Finalizado', score: 97 },
     { id: '2', title: 'Super Mario Odyssey', status: 'Jogando', score: 97 },
@@ -76,9 +77,9 @@ export default function GameList() {
   });
 
   const getScoreColor = (score) => {
-    if (score >= 75) return '#66CC33'; // Verde
-    if (score >= 50) return '#FFCC33'; // Amarelo
-    return '#FF3333'; // Vermelho
+    if (score >= 75) return '#66CC33';
+    if (score >= 50) return '#FFCC33';
+    return '#FF3333';
   };
 
   const renderGameItem = ({ item }) => (
@@ -126,7 +127,6 @@ export default function GameList() {
 
   return (
     <View style={styles.container}>
-      {/* Mensagem de boas-vindas corrigida (apenas uma vez) */}
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>Bem-vindo, Rafael!</Text>
         <Text style={styles.subtitleText}>Pronto para organizar a sua biblioteca?</Text>
